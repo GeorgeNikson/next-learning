@@ -1,8 +1,13 @@
 import { MainLayout } from "../components/MainLayout";
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { MyPost } from "../interfaces/post";
 
-export default function Posts({ posts }) {
+interface PostsPageProps {
+  posts: MyPost[]
+}
+
+export default function Posts({ posts } : PostsPageProps) {
   return (
     <MainLayout title="Посты">
       <h1>Страница постов</h1>

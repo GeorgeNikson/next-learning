@@ -16,7 +16,7 @@ export default function Post({ post: serverPost }) {
       const data = await response.json();
       setPost(data);
     }
-    if (!serverPost){
+    if (!serverPost) {
       load();
     }
   }, []);
@@ -41,17 +41,31 @@ export default function Post({ post: serverPost }) {
   );
 }
 
-Post.getInitialProps = async (ctx) => {
-  // request существует и выполняется в первую очередь на сервере при первоначальном рендеринге.
-  // но, если сайт уже загружен и происходит переход на новую страницу, этот метод (getInitialProps) будет вызываться на фронте
-  // соответственно объекта реквеста уже не будет 
-  if (!ctx.request) {
-    return { post: null };
-  }
-  const response = await fetch(`http://localhost:4200/posts/${ctx.query.id}`);
+// Post.getInitialProps = async ({query, req}) => {
+//   // request существует и выполняется в первую очередь на сервере при первоначальном рендеринге.
+//   // но, если сайт уже загружен и происходит переход на новую страницу, этот метод (getInitialProps) будет вызываться на фронте
+//   // соответственно объекта реквеста уже не будет
+//   if (!req) {
+//     return { post: null };
+//   }
+//   const response = await fetch(`http://localhost:4200/posts/${query.id}`);
+//   const post = await response.json();
+
+//   return {
+//     post,
+//   };
+// };
+
+
+// Более современный вариант 
+
+export async function getServerSideProps({ query, req }) {
+  // эта функция ВСЕГДА вызывается на серверной части
+
+  const response = await fetch(`http://localhost:4200/posts/${query.id}`);
   const post = await response.json();
 
   return {
-    post,
+    props: { post },
   };
-};
+}
