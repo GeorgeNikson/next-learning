@@ -2,18 +2,7 @@ import { MainLayout } from "../components/MainLayout";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 
-export default function Posts() {
-  const [posts, setPosts] = useState<any>([]);
-
-  useEffect(() => {
-    async function load() {
-      const response = await fetch("http://localhost:4200/posts");
-      const json = await response.json();
-      setPosts(json);
-    }
-    load();
-  }, []);
-
+export default function Posts({ posts }) {
   return (
     <MainLayout title="Посты">
       <h1>Страница постов</h1>
@@ -21,7 +10,7 @@ export default function Posts() {
         {posts.map((post) => (
           <li key={post.id}>
             <Link href={`/post/${post.id}`}>
-              <a>{post.body}</a>
+              <a>{post.title}</a>
             </Link>
           </li>
         ))}
@@ -29,3 +18,12 @@ export default function Posts() {
     </MainLayout>
   );
 }
+
+Posts.getInitialProps = async () => {
+  const response = await fetch("http://localhost:4200/posts");
+  const posts = await response.json();
+
+  return {
+    posts,
+  };
+};
