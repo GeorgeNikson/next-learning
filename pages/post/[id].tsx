@@ -1,9 +1,16 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import router, { useRouter } from "next/router";
 import { MainLayout } from "../../components/MainLayout";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { NextPageContext } from "next";
+import { MyPost } from "../../interfaces/post";
 
-export default function Post({ post: serverPost }) {
+interface PostPageProps {
+  post: MyPost
+}
+
+export default function Post({ post: serverPost }: PostPageProps) {
   const router = useRouter();
   const [post, setPost] = useState<any>();
   // console.log(serverPost, post);
@@ -11,7 +18,7 @@ export default function Post({ post: serverPost }) {
   useEffect(() => {
     async function load() {
       const response = await fetch(
-        `http://localhost:4200/posts/${router.query.id}`
+        `${process.env.API_URL}/posts/${router.query.id}`
       );
       const data = await response.json();
       setPost(data);
@@ -23,14 +30,14 @@ export default function Post({ post: serverPost }) {
 
   if (!post) {
     return (
-      <MainLayout>
+      <MainLayout title={"Загрузка..."}>
         <p>Загрузка...</p>
       </MainLayout>
     );
   }
 
   return (
-    <MainLayout title={`Пост ${router.query.id}`}>
+    <MainLayout title={`${post.title}`}>
       <Link href="/posts">
         <a>Назад к постам</a>
       </Link>
@@ -56,16 +63,21 @@ export default function Post({ post: serverPost }) {
 //   };
 // };
 
+// Более современный вариант
 
-// Более современный вариант 
+interface PostNextPageContext extends NextPageContext {
+  query: {
+    id: string;
+  };
+}
 
-export async function getServerSideProps({ query, req }) {
+export async function getServerSideProps({ query, req }: PostNextPageContext) {
   // эта функция ВСЕГДА вызывается на серверной части
 
-  const response = await fetch(`http://localhost:4200/posts/${query.id}`);
-  const post = await response.json();
+  const res = await fetch(`${process.env.API_URL}/posts/${query.id}`);
+  const data: MyPost = await res.json();
 
   return {
-    props: { post },
+    props: { data },
   };
 }

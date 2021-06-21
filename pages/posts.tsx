@@ -25,8 +25,8 @@ export default function Posts({ posts } : PostsPageProps) {
 }
 
 Posts.getInitialProps = async () => {
-  const response = await fetch("http://localhost:4200/posts");
-  const posts = await response.json();
+  const response = await fetch(`${process.env.API_URL}/posts`);
+  const posts: MyPost[] = await response.json();
 
   return {
     posts,
